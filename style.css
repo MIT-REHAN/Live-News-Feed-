@@ -1,0 +1,20 @@
+/* Google Fonts: Playfair Display for newspaper headers, Inter for normal text */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap');
+
+/* Apply the warm cream newspaper background color */
+body {
+  background-color: #FFF4D9;
+  font-family: 'Inter', sans-serif;
+  color: #1a1a1a;
+}
+
+/* Custom newspaper heading font class */
+.font-serif-newspaper {
+  font-family: 'Playfair Display', serif;
+}
+
+/* Custom border lines to look like a real newspaper */
+.newspaper-double-border {
+  border-top: 4px double #1a1a1a;
+  border-bottom: 4px double #1a1a1a;
+}

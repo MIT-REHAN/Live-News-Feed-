@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Rehan Times - Google News Type Website</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Custom Style sheet containing background color and fonts -->
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="py-6 px-4 max-w-7xl mx-auto">
+
+  <!-- TOP BAR (Date, e-paper, login) -->
+  <div class="flex justify-between items-center text-xs text-gray-700 border-b border-gray-300 pb-2 mb-4">
+    <div id="currentDate" class="font-medium">
+      <!-- Date will be filled dynamically below -->
+    </div>
+    <div class="flex items-center gap-4">
+      <span class="text-red-700 font-bold hover:underline cursor-pointer">e-Paper</span>
+      <button
+        class="bg-red-700 hover:bg-red-800 text-white font-bold py-1 px-3 rounded text-[11px] uppercase tracking-wider">
+        Subscribe
+      </button>
+    </div>
+  </div>
+
+  <!-- MAIN NEWSPAPER HEADER -->
+  <div class="text-center my-6">
+    <h1 class="font-serif-newspaper font-extrabold text-5xl md:text-7xl tracking-normal text-gray-900 select-none">
+      THE REHAN TIMES
+    </h1>
+    <p class="text-xs tracking-widest text-gray-500 uppercase mt-2">
+      World Edition • Truth & Independent Journalism
+    </p>
+  </div>
+
+  <!-- NAVIGATION & CATEGORY SELECTOR -->
+  <div class="newspaper-double-border py-2 mb-6">
+    <div class="flex flex-wrap justify-center gap-x-6 gap-y-2 text-xs md:text-sm font-semibold tracking-wide uppercase">
+      <button class="category-btn border-b-2 border-red-700 text-red-700 font-bold px-1 py-1 transition-all"
+        onclick="selectCategory('general', this)">
+        Home
+      </button>
+      <button class="category-btn text-gray-700 px-1 py-1 hover:text-red-700 transition-all"
+        onclick="selectCategory('business', this)">
+        Business
+      </button>
+      <button class="category-btn text-gray-700 px-1 py-1 hover:text-red-700 transition-all"
+        onclick="selectCategory('technology', this)">
+        Technology
+      </button>
+      <button class="category-btn text-gray-700 px-1 py-1 hover:text-red-700 transition-all"
+        onclick="selectCategory('sports', this)">
+        Sports
+      </button>
+      <button class="category-btn text-gray-700 px-1 py-1 hover:text-red-700 transition-all"
+        onclick="selectCategory('science', this)">
+        Science
+      </button>
+      <button class="category-btn text-gray-700 px-1 py-1 hover:text-red-700 transition-all"
+        onclick="selectCategory('health', this)">
+        Health
+      </button>
+    </div>
+  </div>
+
+  <!-- SEARCH BAR AREA -->
+  <div class="flex max-w-xl mx-auto mb-8 shadow-sm">
+    <input type="text" id="searchInput" placeholder="Search for news articles..."
+      class="flex-grow p-3 border border-gray-300 rounded-l focus:outline-none focus:ring-1 focus:ring-red-700 bg-white text-gray-900 text-sm">
+    <button id="searchButton"
+      class="bg-red-700 hover:bg-red-800 text-white font-bold px-6 rounded-r text-sm transition-colors">
+      Search
+    </button>
+  </div>
+
+  <!-- LOADING TEXT INDICATOR -->
+  <div id="loadingText" class="text-center py-12 text-gray-700 font-serif-newspaper text-xl italic"
+    style="display: none;">
+    Gathering the latest articles for you...
+  </div>
+
+  <!-- NEWS CARDS GRID -->
+  <div id="newsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <!-- JavaScript will insert articles here -->
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-gray-300 mt-12 pt-6 pb-8 text-center text-xs text-gray-500">
+    <p class="font-serif-newspaper text-sm italic mb-2 text-gray-700">© 2026 The Daily Times. All rights reserved.</p>
+    <p>Powered by simple APIs & Vanilla Web Stack. Designed for learning.</p>
+  </footer>
+
+  <!-- Inline Date Script (keeps script.js cleaner) -->
+  <script>
+    // Format and show today's date in a nice newspaper format
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    document.getElementById('currentDate').innerText = new Date().toLocaleDateString('en-US', options);
+  </script>
+
+  <!-- Main client logic -->
+  <script src="script.js"></script>
+</body>
+
+</html>
