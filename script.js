@@ -51,20 +51,8 @@ async function loadNews(category = 'general', searchQuery = '') {
   // If the backend isn't available, make a direct request to GNews
   if (useDirectGNews) {
     try {
-      // Look for the GNews API Key in localStorage
-      let apiKey = localStorage.getItem('GNEWS_API_KEY');
-      
-      // If there's no key stored, ask the visitor to input it
-      if (!apiKey) {
-        apiKey = prompt("You are viewing the static/GitHub Pages version. Please enter your GNews API Key to fetch live news:");
-        if (apiKey) {
-          localStorage.setItem('GNEWS_API_KEY', apiKey.trim());
-        }
-      }
-
-      if (!apiKey) {
-        throw new Error("GNews API Key is required to fetch news when hosted statically.");
-      }
+      // Use default API key directly without prompting the user
+      const apiKey = '3186fa41ef5db429efd02ff37e82965a';
 
       let url = '';
       if (searchQuery) {
@@ -85,9 +73,6 @@ async function loadNews(category = 'general', searchQuery = '') {
         <div class="col-span-full text-center py-12 text-red-600 bg-white p-6 rounded border border-red-200 shadow-sm max-w-md mx-auto mt-4">
           <p class="font-bold text-lg">Failed to load news.</p>
           <p class="text-sm mt-1">${fallbackError.message}</p>
-          <button onclick="localStorage.removeItem('GNEWS_API_KEY'); location.reload();" class="mt-4 bg-red-700 hover:bg-red-800 text-white font-bold py-1.5 px-4 rounded text-xs transition-colors">
-            Reset GNews API Key
-          </button>
         </div>
       `;
       return;
