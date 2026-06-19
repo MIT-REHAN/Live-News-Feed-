@@ -22,38 +22,18 @@ async function loadNews(category = 'general', searchQuery = '') {
   loadingText.style.display = 'block';
   newsContainer.innerHTML = '';
 
-  let useDirectGNews = false;
+  // Check if we are running on GitHub Pages (static hosting)
+  const isGitHubPages = window.location.hostname.includes('github.io');
+  const apiKey = '3186fa41ef5db429efd02ff37e82965a';
+  
   let response;
   let data;
+  let fetchSuccessful = false;
 
-  try {
-    // 1. Try to fetch from our Express backend server
-    let url = `${BACKEND_URL}/api/news?category=${category}`;
-    if (searchQuery) {
-      url += `&q=${encodeURIComponent(searchQuery)}`;
-    }
-
-    response = await fetch(url);
-    
-    // If the request failed or returned HTML (like a 404 fallback page on static hosts),
-    // we are likely running statically (e.g., GitHub Pages) without the Express backend.
-    const contentType = response.headers.get('content-type');
-    if (!response.ok || (contentType && contentType.includes('text/html'))) {
-      throw new Error("Server not running or static host detected.");
-    }
-    
-    data = await response.json();
-  } catch (error) {
-    // 2. Fallback: Request GNews directly if we are on a static host (GitHub Pages)
-    useDirectGNews = true;
-  }
-
-  // If the backend isn't available, make a direct request to GNews
-  if (useDirectGNews) {
+  // 1. If on GitHub Pages, fetch directly from GNews API
+  if (isGitHubPages) {
+    console.log("Running on GitHub Pages. Fetching directly from GNews API...");
     try {
-      // Use default API key directly without prompting the user
-      const apiKey = '3186fa41ef5db429efd02ff37e82965a';
-
       let url = '';
       if (searchQuery) {
         url = `https://gnews.io/api/v4/search?q=${encodeURIComponent(searchQuery)}&lang=en&country=us&apikey=${apiKey}`;
@@ -65,17 +45,69 @@ async function loadNews(category = 'general', searchQuery = '') {
       data = await response.json();
       
       if (!response.ok) {
-        throw new Error(data.errors ? data.errors.join(', ') : 'Failed to fetch news from GNews');
+        throw new Error(data.errors ? data.errors.join(', ') : 'GNews API Error');
       }
-    } catch (fallbackError) {
+      fetchSuccessful = true;
+    } catch (gnewsError) {
+      console.error("Direct GNews API Fetch Failed:", gnewsError);
       loadingText.style.display = 'none';
       newsContainer.innerHTML = `
-        <div class="col-span-full text-center py-12 text-red-600 bg-white p-6 rounded border border-red-200 shadow-sm max-w-md mx-auto mt-4">
+        <div class="col-span-full text-center py-12 text-red-600 bg-white p-6 rounded border border-red-200 shadow-sm max-w-md mx-auto mt-4 font-sans">
           <p class="font-bold text-lg">Failed to load news.</p>
-          <p class="text-sm mt-1">${fallbackError.message}</p>
+          <p class="text-sm mt-1">${gnewsError.message}</p>
+          <p class="text-xs text-gray-500 mt-2">If you have an AdBlocker active, it may be blocking direct calls to the GNews API. Try disabling it for this site.</p>
         </div>
       `;
       return;
+    }
+  } else {
+    // 2. Local development (try Express proxy first, fallback to direct GNews API)
+    try {
+      console.log("Local environment detected. Trying Express proxy...");
+      let url = `${BACKEND_URL}/api/news?category=${category}`;
+      if (searchQuery) {
+        url += `&q=${encodeURIComponent(searchQuery)}`;
+      }
+
+      response = await fetch(url);
+      const contentType = response.headers.get('content-type');
+      
+      if (!response.ok || (contentType && contentType.includes('text/html'))) {
+        throw new Error("Local Express server is not running.");
+      }
+      
+      data = await response.json();
+      fetchSuccessful = true;
+    } catch (localProxyError) {
+      console.warn("Express proxy failed, falling back to direct GNews API query:", localProxyError);
+      
+      // Fallback directly to GNews API from localhost
+      try {
+        let url = '';
+        if (searchQuery) {
+          url = `https://gnews.io/api/v4/search?q=${encodeURIComponent(searchQuery)}&lang=en&country=us&apikey=${apiKey}`;
+        } else {
+          url = `https://gnews.io/api/v4/top-headlines?category=${category}&lang=en&country=us&apikey=${apiKey}`;
+        }
+
+        response = await fetch(url);
+        data = await response.json();
+        
+        if (!response.ok) {
+          throw new Error(data.errors ? data.errors.join(', ') : 'GNews API Error');
+        }
+        fetchSuccessful = true;
+      } catch (fallbackError) {
+        console.error("Local GNews fallback failed:", fallbackError);
+        loadingText.style.display = 'none';
+        newsContainer.innerHTML = `
+          <div class="col-span-full text-center py-12 text-red-600 bg-white p-6 rounded border border-red-200 shadow-sm max-w-md mx-auto mt-4 font-sans">
+            <p class="font-bold text-lg">Failed to load news.</p>
+            <p class="text-sm mt-1">${fallbackError.message}</p>
+          </div>
+        `;
+        return;
+      }
     }
   }
 
